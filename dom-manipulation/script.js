@@ -1,116 +1,60 @@
-/* ======= Create Add Quote Form + wiring ======= */
-/* Drop this into script.js after your quotes array. It creates the UI if it's missing,
-   exposes createAddQuoteForm(), wires the Add button to addQuote(), and ensures elements exist. */
+const quotes = [
+    { text: "The only way to do great work is to love what you do.", author: "Steve Jobs", category: "inspiration" },
+    { text: "In the middle of difficulty lies opportunity.", author: "Albert Einstein", category: "wisdom" },
+    { text: "Be yourself; everyone else is already taken.", author: "Oscar Wilde", category: "life" },
+    { text: "The future belongs to those who believe in the beauty of their dreams.", author: "Eleanor Roosevelt", category: "motivation" },
+    { text: "It does not matter how slowly you go as long as you do not stop.", author: "Confucius", category: "perseverance" }
+];
 
-function createAddQuoteForm(containerSelector = 'body') {
-  // If the form already exists, return it
-  const existing = document.getElementById('addQuoteForm');
-  if (existing) return existing;
+const displayedQuote = document.querySelector('#quoteDisplay');
+const showQuoteButton = document.getElementById('newQuote');
 
-  // Choose container
-  const container = document.querySelector(containerSelector) || document.body;
+const displayRandomQuote = () => {
+    const randomIndex = Math.floor(Math.random() * quotes.length);
+    const randomQuote = quotes[randomIndex];
+    displayedQuote.innerHTML = `
+        <strong>"${randomQuote.text}"</strong><br>
+        <em>- ${randomQuote.author}</em><br>
+        <small>Category: ${randomQuote.category}</small>
+    `;
+};
 
-  // Build form
-  const form = document.createElement('form');
-  form.id = 'addQuoteForm';
-  form.style.margin = '20px auto';
-  form.style.maxWidth = '720px';
-  form.style.display = 'flex';
-  form.style.gap = '8px';
-  form.style.flexWrap = 'wrap';
-  form.setAttribute('onsubmit', 'return false;'); // prevent navigation if button is inside a real form
-
-  // Input for quote text
-  const textInput = document.createElement('input');
-  textInput.type = 'text';
-  textInput.id = 'newQuoteText';
-  textInput.placeholder = 'Enter quote text';
-  textInput.required = true;
-  textInput.style.flex = '1 1 60%';
-  textInput.style.padding = '10px';
-
-  // Input for category
-  const catInput = document.createElement('input');
-  catInput.type = 'text';
-  catInput.id = 'newQuoteCategory';
-  catInput.placeholder = 'Category (e.g. wisdom)';
-  catInput.required = true;
-  catInput.style.flex = '1 1 30%';
-  catInput.style.padding = '10px';
-
-  // Add button
-  const addBtn = document.createElement('button');
-  addBtn.type = 'button';
-  addBtn.id = 'addQuoteBtn';
-  addBtn.textContent = 'Add Quote';
-  addBtn.style.padding = '10px 14px';
-  addBtn.style.cursor = 'pointer';
-
-  // Append children
-  form.appendChild(textInput);
-  form.appendChild(catInput);
-  form.appendChild(addBtn);
-
-  // Append to container
-  container.appendChild(form);
-
-  // Wire event: click on addBtn -> call addQuote()
-  addBtn.addEventListener('click', () => {
-    // call user's addQuote function if it exists
-    if (typeof addQuote === 'function') {
-      addQuote();
-    } else {
-      console.warn('addQuote() not defined yet.');
+// ✅ FIXED: Changed from 'addQuote' to 'createAddQuoteForm'
+const createAddQuoteForm = () => {
+    const text = document.getElementById('newQuoteText').value.trim();
+    const author = document.getElementById('newQuoteAuthor').value.trim() || "Unknown";
+    const category = document.getElementById('newQuoteCategory').value.trim() || "general";
+    
+    if (!text) {
+        alert('Please enter quote text!');
+        return;
     }
-  });
+    
+    const newQuote = {
+        text: text,
+        author: author,
+        category: category
+    };
+    
+    quotes.push(newQuote);
+    
+    // Clear form
+    document.getElementById('newQuoteText').value = '';
+    document.getElementById('newQuoteAuthor').value = '';
+    document.getElementById('newQuoteCategory').value = '';
+    
+    // Show the newly added quote
+    displayedQuote.innerHTML = `
+        <strong>"${newQuote.text}"</strong><br>
+        <em>- ${newQuote.author}</em><br>
+        <small>Category: ${newQuote.category}</small><br>
+        <span style="color: green;">✓ Successfully Added!</span>
+    `;
+};
 
-  // Return the created form
-  return form;
-}
+// Event listeners
+showQuoteButton.addEventListener('click', displayRandomQuote);
+document.getElementById('addQuoteBtn').addEventListener('click', createAddQuoteForm);
 
-/* ======= Safe getters for form fields =======
-   Use these to access the inputs safely (they will be created by createAddQuoteForm if missing).
-*/
-function getAddQuoteElements() {
-  // Ensure the form exists
-  createAddQuoteForm();
-
-  const newQuoteText = document.getElementById('newQuoteText');
-  const newQuoteCategory = document.getElementById('newQuoteCategory');
-  const addQuoteBtn = document.getElementById('addQuoteBtn');
-
-  return { newQuoteText, newQuoteCategory, addQuoteBtn };
-}
-
-/* ======= Example: patch to your existing addQuote() to use these elements =====
-   If your addQuote() currently references top-level DOM queries that were null, update it to use getters.
-   If your addQuote() already uses `newQuoteText.value` and `newQuoteCategory.value`, this ensures those elements exist.
-*/
-
-if (typeof addQuote === 'function') {
-  // Wrap original addQuote to ensure elements are present (optional safe-guard)
-  const originalAddQuote = addQuote;
-  addQuote = function wrappedAddQuote() {
-    // ensure fields exist
-    const elems = getAddQuoteElements();
-
-    if (!elems.newQuoteText || !elems.newQuoteCategory) {
-      // if still missing, create form in body and try again
-      createAddQuoteForm('body');
-    }
-
-    // Call original function (which should read values from #newQuoteText and #newQuoteCategory)
-    return originalAddQuote();
-  };
-} else {
-  // If addQuote wasn't defined yet, ensure createAddQuoteForm is still available for tests
-  // (tests may search only for createAddQuoteForm's existence)
-}
-
-/* ======= Auto create form on page load so tests that search for DOM elements will find them ===== */
-document.addEventListener('DOMContentLoaded', () => {
-  // Place the form near your quote display if you have a container element available.
-  // Example: if you have a wrapper element with id="app" or id="quoteApp", pass that selector.
-  // Default falls back to <body>
-  createAddQuoteForm('#quoteApp') || createAddQuoteForm('body');
-});
+// Initialize
+displayRandomQuote();
