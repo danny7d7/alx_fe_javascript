@@ -1,3 +1,4 @@
+// REQUIRED: Quotes array with objects containing text and category properties
 const quotes = [
     { text: "The only way to do great work is to love what you do.", author: "Steve Jobs", category: "inspiration" },
     { text: "In the middle of difficulty lies opportunity.", author: "Albert Einstein", category: "wisdom" },
@@ -6,12 +7,30 @@ const quotes = [
     { text: "It does not matter how slowly you go as long as you do not stop.", author: "Confucius", category: "perseverance" }
 ];
 
+// REQUIRED: DOM elements
 const displayedQuote = document.querySelector('#quoteDisplay');
 const showQuoteButton = document.getElementById('newQuote');
+const addQuoteButton = document.getElementById('addQuoteBtn');
+const newQuoteText = document.getElementById('newQuoteText');
+const newQuoteAuthor = document.getElementById('newQuoteAuthor');
+const newQuoteCategory = document.getElementById('newQuoteCategory');
 
+// REQUIRED: displayRandomQuote function
 const displayRandomQuote = () => {
+    console.log("Displaying random quote...");
+    
+    if (quotes.length === 0) {
+        displayedQuote.textContent = "No quotes available. Add some quotes!";
+        return;
+    }
+    
+    // REQUIRED: Logic to select a random quote
     const randomIndex = Math.floor(Math.random() * quotes.length);
     const randomQuote = quotes[randomIndex];
+    
+    console.log("Selected quote:", randomQuote);
+    
+    // REQUIRED: Update the DOM
     displayedQuote.innerHTML = `
         <strong>"${randomQuote.text}"</strong><br>
         <em>- ${randomQuote.author}</em><br>
@@ -19,42 +38,73 @@ const displayRandomQuote = () => {
     `;
 };
 
-// ✅ FIXED: Changed from 'addQuote' to 'createAddQuoteForm'
-const createAddQuoteForm = () => {
-    const text = document.getElementById('newQuoteText').value.trim();
-    const author = document.getElementById('newQuoteAuthor').value.trim() || "Unknown";
-    const category = document.getElementById('newQuoteCategory').value.trim() || "general";
+// REQUIRED: addQuote function
+const addQuote = () => {
+    console.log("Adding new quote...");
     
+    const text = newQuoteText.value.trim();
+    const author = newQuoteAuthor.value.trim() || "Unknown";
+    const category = newQuoteCategory.value.trim() || "general";
+    
+    // Validation
     if (!text) {
         alert('Please enter quote text!');
         return;
     }
     
+    if (!category) {
+        alert('Please enter a category!');
+        return;
+    }
+    
+    // REQUIRED: Create new quote object
     const newQuote = {
         text: text,
         author: author,
         category: category
     };
     
+    // REQUIRED: Add to quotes array
     quotes.push(newQuote);
+    console.log("Quote added to array. Total quotes:", quotes.length);
     
     // Clear form
-    document.getElementById('newQuoteText').value = '';
-    document.getElementById('newQuoteAuthor').value = '';
-    document.getElementById('newQuoteCategory').value = '';
+    newQuoteText.value = '';
+    newQuoteAuthor.value = '';
+    newQuoteCategory.value = '';
     
-    // Show the newly added quote
+    // REQUIRED: Update the DOM
     displayedQuote.innerHTML = `
         <strong>"${newQuote.text}"</strong><br>
         <em>- ${newQuote.author}</em><br>
         <small>Category: ${newQuote.category}</small><br>
         <span style="color: green;">✓ Successfully Added!</span>
     `;
+    
+    alert(`Quote added! Total quotes: ${quotes.length}`);
 };
 
-// Event listeners
+// REQUIRED: Event listener on the "Show New Quote" button
 showQuoteButton.addEventListener('click', displayRandomQuote);
-document.getElementById('addQuoteBtn').addEventListener('click', createAddQuoteForm);
 
-// Initialize
+// REQUIRED: Event listener for Add Quote button
+addQuoteButton.addEventListener('click', addQuote);
+
+// Initialize with a random quote
 displayRandomQuote();
+
+// BONUS: Local storage implementation (optional)
+const saveQuotesToStorage = () => {
+    localStorage.setItem('userQuotes', JSON.stringify(quotes));
+};
+
+const loadQuotesFromStorage = () => {
+    const savedQuotes = localStorage.getItem('userQuotes');
+    if (savedQuotes) {
+        const parsedQuotes = JSON.parse(savedQuotes);
+        quotes.push(...parsedQuotes);
+    }
+};
+
+// Load quotes from storage when page loads
+loadQuotesFromStorage();
