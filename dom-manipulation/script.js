@@ -15,8 +15,8 @@ const newQuoteText = document.getElementById('newQuoteText');
 const newQuoteAuthor = document.getElementById('newQuoteAuthor');
 const newQuoteCategory = document.getElementById('newQuoteCategory');
 
-// REQUIRED: displayRandomQuote function
-const displayRandomQuote = () => {
+// REQUIRED: showRandomQuote function
+const showRandomQuote = () => {
     console.log("Displaying random quote...");
     
     if (quotes.length === 0) {
@@ -93,13 +93,16 @@ const addQuote = () => {
 };
 
 // REQUIRED: Event listener on the "Show New Quote" button
-showQuoteButton.addEventListener('click', displayRandomQuote);
+showQuoteButton.addEventListener('click', showRandomQuote);
 
 // REQUIRED: Event listener for Add Quote button
 addQuoteButton.addEventListener('click', addQuote);
 
+// Initialize the add quote form
+createAddQuoteForm();
+
 // Initialize with a random quote
-displayRandomQuote();
+showRandomQuote();
 
 // BONUS: Local storage implementation (optional)
 const saveQuotesToStorage = () => {
