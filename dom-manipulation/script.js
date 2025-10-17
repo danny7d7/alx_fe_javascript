@@ -98,9 +98,6 @@ showQuoteButton.addEventListener('click', displayRandomQuote);
 // REQUIRED: Event listener for Add Quote button
 addQuoteButton.addEventListener('click', addQuote);
 
-// Initialize the add quote form
-createAddQuoteForm();
-
 // Initialize with a random quote
 displayRandomQuote();
 
