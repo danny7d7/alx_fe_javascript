@@ -30,20 +30,67 @@ const showRandomQuote = () => {
     
     console.log("Selected quote:", randomQuote);
     
-    // REQUIRED: Update the DOM
-    displayedQuote.innerHTML = `
-        <strong>"${randomQuote.text}"</strong><br>
-        <em>- ${randomQuote.author}</em><br>
-        <small>Category: ${randomQuote.category}</small>
-    `;
+    // REQUIRED: Update the DOM using createElement and appendChild
+    // Clear existing content
+    displayedQuote.innerHTML = '';
+    
+    // Create elements dynamically
+    const quoteText = document.createElement('strong');
+    quoteText.textContent = `"${randomQuote.text}"`;
+    
+    const quoteAuthor = document.createElement('em');
+    quoteAuthor.textContent = `- ${randomQuote.author}`;
+    
+    const quoteCategory = document.createElement('small');
+    quoteCategory.textContent = `Category: ${randomQuote.category}`;
+    
+    // Append elements to display
+    displayedQuote.appendChild(quoteText);
+    displayedQuote.appendChild(document.createElement('br'));
+    displayedQuote.appendChild(quoteAuthor);
+    displayedQuote.appendChild(document.createElement('br'));
+    displayedQuote.appendChild(quoteCategory);
 };
 
 // REQUIRED: createAddQuoteForm function
 const createAddQuoteForm = () => {
-    // This function creates the form elements for adding quotes
-    // The form is already created in HTML, so this function can be empty
-    // or contain any additional form setup logic if needed
-    console.log("Add quote form is ready");
+    // Create form elements dynamically using createElement and appendChild
+    const formContainer = document.querySelector('body');
+    
+    // Create a new div for the form
+    const formDiv = document.createElement('div');
+    formDiv.id = 'dynamicForm';
+    
+    // Create input elements
+    const textInput = document.createElement('input');
+    textInput.id = 'dynamicQuoteText';
+    textInput.type = 'text';
+    textInput.placeholder = 'Enter quote text';
+    
+    const authorInput = document.createElement('input');
+    authorInput.id = 'dynamicQuoteAuthor';
+    authorInput.type = 'text';
+    authorInput.placeholder = 'Enter author';
+    
+    const categoryInput = document.createElement('input');
+    categoryInput.id = 'dynamicQuoteCategory';
+    categoryInput.type = 'text';
+    categoryInput.placeholder = 'Enter category';
+    
+    const submitButton = document.createElement('button');
+    submitButton.id = 'dynamicSubmitBtn';
+    submitButton.textContent = 'Add Dynamic Quote';
+    
+    // Append elements to form div
+    formDiv.appendChild(textInput);
+    formDiv.appendChild(authorInput);
+    formDiv.appendChild(categoryInput);
+    formDiv.appendChild(submitButton);
+    
+    // Append form to body
+    formContainer.appendChild(formDiv);
+    
+    console.log("Dynamic form created with createElement and appendChild");
 };
 
 // REQUIRED: addQuote function
@@ -81,22 +128,53 @@ const addQuote = () => {
     newQuoteAuthor.value = '';
     newQuoteCategory.value = '';
     
-    // REQUIRED: Update the DOM
-    displayedQuote.innerHTML = `
-        <strong>"${newQuote.text}"</strong><br>
-        <em>- ${newQuote.author}</em><br>
-        <small>Category: ${newQuote.category}</small><br>
-        <span style="color: green;">✓ Successfully Added!</span>
-    `;
+    // REQUIRED: Update the DOM using createElement and appendChild
+    // Clear existing content
+    displayedQuote.innerHTML = '';
+    
+    // Create elements dynamically
+    const quoteText = document.createElement('strong');
+    quoteText.textContent = `"${newQuote.text}"`;
+    
+    const quoteAuthor = document.createElement('em');
+    quoteAuthor.textContent = `- ${newQuote.author}`;
+    
+    const quoteCategory = document.createElement('small');
+    quoteCategory.textContent = `Category: ${newQuote.category}`;
+    
+    const successMessage = document.createElement('span');
+    successMessage.textContent = '✓ Successfully Added!';
+    successMessage.style.color = 'green';
+    
+    // Append elements to display
+    displayedQuote.appendChild(quoteText);
+    displayedQuote.appendChild(document.createElement('br'));
+    displayedQuote.appendChild(quoteAuthor);
+    displayedQuote.appendChild(document.createElement('br'));
+    displayedQuote.appendChild(quoteCategory);
+    displayedQuote.appendChild(document.createElement('br'));
+    displayedQuote.appendChild(successMessage);
     
     alert(`Quote added! Total quotes: ${quotes.length}`);
 };
 
 // REQUIRED: Event listener on the "Show New Quote" button
-showQuoteButton.addEventListener('click', showRandomQuote);
+document.addEventListener('DOMContentLoaded', () => {
+    const showQuoteBtn = document.getElementById('newQuote');
+    if (showQuoteBtn) {
+        showQuoteBtn.addEventListener('click', showRandomQuote);
+        console.log("Event listener added to Show New Quote button");
+    }
+});
 
 // REQUIRED: Event listener for Add Quote button
-addQuoteButton.addEventListener('click', addQuote);
+document.addEventListener('DOMContentLoaded', () => {
+    const addQuoteBtn = document.getElementById('addQuoteBtn');
+    if (addQuoteBtn) {
+        addQuoteBtn.addEventListener('click', addQuote);
+        console.log("Event listener added to Add Quote button");
+    }
+});
 
 // Initialize the add quote form
 createAddQuoteForm();
