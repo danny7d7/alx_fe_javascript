@@ -30,6 +30,9 @@ const showRandomQuote = () => {
     
     console.log("Selected quote:", randomQuote);
     
+    // Save last viewed quote to session storage
+    sessionStorage.setItem('lastViewedQuote', JSON.stringify(randomQuote));
+    
     // REQUIRED: Update the DOM using createElement and appendChild
     // Clear existing content
     displayedQuote.innerHTML = '';
@@ -123,6 +126,9 @@ const addQuote = () => {
     quotes.push(newQuote);
     console.log("Quote added to array. Total quotes:", quotes.length);
     
+    // Save to local storage
+    saveQuotesToStorage();
+    
     // Clear form
     newQuoteText.value = '';
     newQuoteAuthor.value = '';
@@ -179,8 +185,10 @@ document.addEventListener('DOMContentLoaded', () => {
 // Initialize the add quote form
 createAddQuoteForm();
 
-// Initialize with a random quote
-showRandomQuote();
+// Initialize with a random quote or last viewed quote
+if (!loadLastViewedQuote()) {
+    showRandomQuote();
+}
 
 // BONUS: Local storage implementation (optional)
 const saveQuotesToStorage = () => {
@@ -197,3 +205,122 @@ const loadQuotesFromStorage = () => {
 
 // Load quotes from storage when page loads
 loadQuotesFromStorage();
+
+// Load last viewed quote from session storage
+const loadLastViewedQuote = () => {
+    const lastQuote = sessionStorage.getItem('lastViewedQuote');
+    if (lastQuote) {
+        const parsedQuote = JSON.parse(lastQuote);
+        console.log("Last viewed quote loaded from session storage:", parsedQuote);
+        
+        // Display the last viewed quote
+        displayedQuote.innerHTML = '';
+        
+        const quoteText = document.createElement('strong');
+        quoteText.textContent = `"${parsedQuote.text}"`;
+        
+        const quoteAuthor = document.createElement('em');
+        quoteAuthor.textContent = `- ${parsedQuote.author}`;
+        
+        const quoteCategory = document.createElement('small');
+        quoteCategory.textContent = `Category: ${parsedQuote.category}`;
+        
+        const sessionInfo = document.createElement('small');
+        sessionInfo.textContent = '(Last viewed in this session)';
+        sessionInfo.style.color = '#666';
+        
+        displayedQuote.appendChild(quoteText);
+        displayedQuote.appendChild(document.createElement('br'));
+        displayedQuote.appendChild(quoteAuthor);
+        displayedQuote.appendChild(document.createElement('br'));
+        displayedQuote.appendChild(quoteCategory);
+        displayedQuote.appendChild(document.createElement('br'));
+        displayedQuote.appendChild(sessionInfo);
+        
+        return true;
+    }
+    return false;
+};
+
+// REQUIRED: exportToJsonFile function
+const exportToJsonFile = () => {
+    console.log("Exporting quotes to JSON file...");
+    
+    if (quotes.length === 0) {
+        alert('No quotes to export!');
+        return;
+    }
+    
+    // Create JSON data
+    const jsonData = JSON.stringify(quotes, null, 2);
+    
+    // Create blob and download link
+    const blob = new Blob([jsonData], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    
+    // Create download link
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'quotes.json';
+    
+    // Trigger download
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    // Clean up
+    URL.revokeObjectURL(url);
+    
+    console.log(`Exported ${quotes.length} quotes to JSON file`);
+    alert(`Successfully exported ${quotes.length} quotes!`);
+};
+
+// REQUIRED: importFromJsonFile function
+const importFromJsonFile = (event) => {
+    console.log("Importing quotes from JSON file...");
+    
+    const file = event.target.files[0];
+    if (!file) {
+        return;
+    }
+    
+    const fileReader = new FileReader();
+    fileReader.onload = function(event) {
+        try {
+            const importedQuotes = JSON.parse(event.target.result);
+            
+            // Validate the imported data
+            if (!Array.isArray(importedQuotes)) {
+                alert('Invalid JSON file format! Expected an array of quotes.');
+                return;
+            }
+            
+            // Add imported quotes to existing quotes
+            quotes.push(...importedQuotes);
+            
+            // Save to local storage
+            saveQuotesToStorage();
+            
+            console.log(`Imported ${importedQuotes.length} quotes. Total quotes: ${quotes.length}`);
+            alert(`Successfully imported ${importedQuotes.length} quotes! Total quotes: ${quotes.length}`);
+            
+            // Clear the file input
+            event.target.value = '';
+            
+        } catch (error) {
+            console.error('Error parsing JSON file:', error);
+            alert('Error reading JSON file! Please check the file format.');
+        }
+    };
+    
+    fileReader.readAsText(file);
+};
+
+// Event listener for export button
+document.addEventListener('DOMContentLoaded', () => {
+    const exportBtn = document.getElementById('exportBtn');
+    if (exportBtn) {
+        exportBtn.addEventListener('click', exportToJsonFile);
+        console.log("Event listener added to Export button");
+    }
+});
