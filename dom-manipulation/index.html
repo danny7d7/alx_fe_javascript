@@ -12,12 +12,27 @@
         <!-- quotes will be displayed here -->
     </div>
     <button id="newQuote">Show New Quote</button>
+    
+    <div style="margin-top: 20px;">
+        <label for="categoryFilter">Filter by Category:</label>
+        <select id="categoryFilter" onchange="filterQuotes()">
+            <option value="all">All Categories</option>
+            <!-- Dynamically populated categories -->
+        </select>
+    </div>
+    
     <h1></h1>
 
     <div>
         <input id="newQuoteText" type="text" placeholder="Enter a new quote" />
+        <input id="newQuoteAuthor" type="text" placeholder="Enter quote author" />
         <input id="newQuoteCategory" type="text" placeholder="Enter quote category" />
-        <button onclick="addQuote()">Add Quote</button>
+        <button id="addQuoteBtn">Add Quote</button>
+    </div>
+
+    <div style="margin-top: 20px;">
+        <button id="exportBtn" onclick="exportToJsonFile()">Export Quotes</button>
+        <input type="file" id="importFile" accept=".json" onchange="importFromJsonFile(event)" />
     </div>
 
 
