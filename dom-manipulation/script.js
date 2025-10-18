@@ -14,6 +14,10 @@ const addQuoteButton = document.getElementById('addQuoteBtn');
 const newQuoteText = document.getElementById('newQuoteText');
 const newQuoteAuthor = document.getElementById('newQuoteAuthor');
 const newQuoteCategory = document.getElementById('newQuoteCategory');
+const categoryFilter = document.getElementById('categoryFilter');
+
+// Filtered quotes array
+let filteredQuotes = [...quotes];
 
 // REQUIRED: showRandomQuote function
 const showRandomQuote = () => {
@@ -243,7 +247,7 @@ const loadLastViewedQuote = () => {
 };
 
 // REQUIRED: exportToJsonFile function
-const exportToJsonFile = () => {
+function exportToJsonFile() {
     console.log("Exporting quotes to JSON file...");
     
     if (quotes.length === 0) {
@@ -276,7 +280,7 @@ const exportToJsonFile = () => {
 };
 
 // REQUIRED: importFromJsonFile function
-const importFromJsonFile = (event) => {
+function importFromJsonFile(event) {
     console.log("Importing quotes from JSON file...");
     
     const file = event.target.files[0];
@@ -315,12 +319,3 @@ const importFromJsonFile = (event) => {
     
     fileReader.readAsText(file);
 };
-
-// Event listener for export button
-document.addEventListener('DOMContentLoaded', () => {
-    const exportBtn = document.getElementById('exportBtn');
-    if (exportBtn) {
-        exportBtn.addEventListener('click', exportToJsonFile);
-        console.log("Event listener added to Export button");
-    }
-});
