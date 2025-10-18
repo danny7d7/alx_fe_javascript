@@ -382,7 +382,7 @@ async function syncQuotes() {
             // Update filtered quotes
             filterQuotes();
             
-            showNotification(`Synced successfully! Added ${serverQuotes.length} new quotes.`, "success");
+            showNotification("Quotes synced with server!", "success");
             
             // Post local quotes to server
             await postQuotesToServer(quotes);
